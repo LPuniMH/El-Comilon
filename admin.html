@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Prototipo</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome (para iconos) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Configuración de Tailwind (para el tema rojo) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Paleta de colores rojos
+                        primary: {
+                            light: '#FECACA', // red-200
+                            DEFAULT: '#DC2626', // red-600
+                            dark: '#991B1B',  // red-800
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    
+    <!-- Estilos CSS personalizados -->
+    <style>
+        /* Estilo para la vista activa del nav */
+        .nav-link.active {
+            color: #DC2626; /* text-primary */
+        }
+        
+        /* Ocultar scrollbar pero permitir scroll */
+        main::-webkit-scrollbar {
+            display: none;
+        }
+        main {
+            -ms-overflow-style: none; /* IE y Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        /* Animación suave para mostrar vistas */
+        .view-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-200">
+
+    <!-- Contenedor principal de la App (Vista Móvil) -->
+    <div class="max-w-md mx-auto h-[100dvh] bg-gray-100 shadow-2xl flex flex-col font-sans">
+
+        <!-- 1. Header (Logo y Título) -->
+        <header class="bg-white shadow-md p-4 flex justify-between items-center border-b-2 border-primary sticky top-0 z-10">
+            <img 
+                src="logoB.png"
+                alt="Logo" 
+                class="h-10"
+                onerror="this.onerror=null; this.src='https://placehold.co/160x50/FFFFFF/DC2626?text=Logo+Error&font=inter';"
+            >
+            <h1 id="view-title" class="text-xl font-bold text-gray-800">Pedidos</h1>
+        </header>
+
+        <!-- 2. Contenido Principal (Dinámico) -->
+        <main id="main-content" class="flex-1 overflow-y-auto p-4 space-y-4">
+
+            <!-- ====================================================== -->
+            <!-- VISTA 1: PEDIDOS (H1)                                  -->
+            <!-- ====================================================== -->
+            <section id="view-pedidos" class="view-content space-y-4">
+                <!-- H1-S3: Pedido confirmado -->
+                <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-primary">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-lg">Pedido #1024 (Empresa Foodie)</h3>
+                        <span class="text-xs font-medium bg-primary-light text-primary-dark px-2 py-1 rounded-full">Nuevo</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mt-1">3x Burger Clásica, 2x Papas, 5x Bebida</p>
+                    <p class="text-gray-800 font-semibold mt-2">Total: $25.500</p>
+                    <button class="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg mt-3 hover:bg-primary-dark transition-colors"
+                        onclick="confirmOrder(this)">
+                        <i class="fas fa-check"></i> Confirmar y Enviar a Cocina
+                    </button>
+                </div>
+                
+                <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-yellow-400">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-lg">Pedido #1023 (Oficina Tech)</h3>
+                        <span class="text-xs font-medium bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">En Cocina</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mt-1">10x Menú Ejecutivo</p>
+                    <p class="text-gray-800 font-semibold mt-2">Total: $80.000</p>
+                </div>
+            </section>
+
+            <!-- ====================================================== -->
+            <!-- VISTA 2: MENÚ (CATÁLOGO) (H1)                           -->
+            <!-- ====================================================== -->
+            <section id="view-menu" class="view-content hidden space-y-4">
+                <!-- H1-S1 & H1-S2: Producto disponible / agotado -->
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg">Burger Clásica</h3>
+                    <p class="text-gray-600 text-sm">Carne, queso, lechuga, tomate y salsa especial.</p>
+                    <p class="text-gray-800 font-semibold mt-2">$5.000</p>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="font-medium">Disponibilidad:</span>
+                        <button class="stock-toggle available w-32 text-sm font-semibold py-1 px-3 rounded-full transition-colors"
+                            data-status="available"
+                            onclick="toggleStock(this)">
+                            <i class="fas fa-check-circle"></i> Disponible
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg">Menú Ejecutivo</h3>
+                    <p class="text-gray-600 text-sm">Plato de fondo del día, ensalada y bebida.</p>
+                    <p class="text-gray-800 font-semibold mt-2">$8.000</p>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="font-medium">Disponibilidad:</span>
+                        <button class="stock-toggle unavailable w-32 text-sm font-semibold py-1 px-3 rounded-full transition-colors"
+                            data-status="unavailable"
+                            onclick="toggleStock(this)">
+                            <i class="fas fa-times-circle"></i> Agotado
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg">Papas Fritas</h3>
+                    <p class="text-gray-600 text-sm">Porción grande de papas fritas caseras.</p>
+                    <p class="text-gray-800 font-semibold mt-2">$2.500</p>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="font-medium">Disponibilidad:</span>
+                        <button class="stock-toggle available w-32 text-sm font-semibold py-1 px-3 rounded-full transition-colors"
+                            data-status="available"
+                            onclick="toggleStock(this)">
+                            <i class="fas fa-check-circle"></i> Disponible
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ====================================================== -->
+            <!-- VISTA 3: EMPRESAS (H2)                                 -->
+            <!-- ====================================================== -->
+            <section id="view-empresas" class="view-content hidden space-y-4">
+                <button class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-primary-dark transition-colors shadow-md"
+                    onclick="openModal('H2', 'new')">
+                    <i class="fas fa-plus"></i> Registrar Nueva Empresa
+                </button>
+                
+                <!-- Contenedor para la lista de empresas -->
+                <div id="empresas-list" class="space-y-4">
+                    <!-- H2-S1, S2, S3: Lista de empresas -->
+                    <div class="bg-white p-4 rounded-lg shadow-md" id="empresa-1">
+                        <h3 class="font-bold text-lg">Empresa Foodie S.A.</h3>
+                        <p class="text-gray-600 text-sm">Contacto: Juan Pérez (juan@foodie.com)</p>
+                        <p class="text-gray-600 text-sm">Dirección: Av. Siempre Viva 123</p>
+                        <div class="flex gap-2 mt-3">
+                            <button class="flex-1 bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-gray-300"
+                                onclick="openModal('H2', 'edit', 'Empresa Foodie S.A.', 'juan@foodie.com', 'Av. Siempre Viva 123')">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="flex-1 bg-red-100 text-red-700 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-red-200"
+                                onclick="deleteItem('empresa-1', 'Empresa Foodie S.A.')">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-lg shadow-md" id="empresa-2">
+                        <h3 class="font-bold text-lg">Oficina Tech Ltda.</h3>
+                        <p class="text-gray-600 text-sm">Contacto: Maria Rojas (m.rojas@tech.cl)</p>
+                        <p class="text-gray-600 text-sm">Dirección: Calle Falsa 456</p>
+                        <div class="flex gap-2 mt-3">
+                            <button class="flex-1 bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-gray-300"
+                                onclick="openModal('H2', 'edit', 'Oficina Tech Ltda.', 'm.rojas@tech.cl', 'Calle Falsa 456')">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="flex-1 bg-red-100 text-red-700 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-red-200"
+                                onclick="deleteItem('empresa-2', 'Oficina Tech Ltda.')">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- ====================================================== -->
+            <!-- VISTA 4: REPARTOS (H3)                                 -->
+            <!-- ====================================================== -->
+            <section id="view-repartos" class="view-content hidden space-y-6">
+                <!-- H3-S1: Repartidor asignado -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Listos para Asignar</h3>
+                    <div class="bg-white p-4 rounded-lg shadow-md" id="reparto-1">
+                        <h3 class="font-bold text-lg">Pedido #1022 (Empresa ABC)</h3>
+                        <p class="text-gray-600 text-sm">Dirección: Av. Principal 789</p>
+                        <select class="w-full border border-gray-300 rounded-md p-2 mt-3 focus:ring-primary focus:border-primary">
+                            <option value="">Seleccionar repartidor...</option>
+                            <option value="rep1">Juan Morales</option>
+                            <option value="rep2">Ana Torres</option>
+                        </select>
+                        <button class="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg mt-3 hover:bg-primary-dark transition-colors"
+                            onclick="assignDelivery('reparto-1')">
+                            <i class="fas fa-motorcycle"></i> Asignar Repartidor
+                        </button>
+                    </div>
+                </div>
+
+                <!-- H3-S2 & S3: Entrega en seguimiento / confirmada -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Entregas en Curso</h3>
+                    <div id="repartos-en-curso-list" class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-blue-500">
+                            <div class="flex justify-between items-center">
+                                <h3 class="font-bold text-lg">Pedido #1021 (Oficina Tech)</h3>
+                                <span class="text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-full">En Camino</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mt-1">Repartidor: Ana Torres</p>
+                            <p class="text-gray-600 text-sm">Tiempo estimado: 15 min</p>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mt-3">
+                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 45%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- ====================================================== -->
+            <!-- VISTA 5: GESTIÓN (H4, H5, H6)                          -->
+            <!-- ====================================================== -->
+            <section id="view-gestion" class="view-content hidden space-y-4">
+                <h2 class="text-xl font-semibold text-gray-800">Panel de Gestión</h2>
+                
+                <!-- H4: Promociones -->
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-tags text-primary mr-2"></i>Gestión de Promociones</h3>
+                    <p class="text-gray-600 text-sm mb-3">Crear, editar o eliminar descuentos y ofertas especiales.</p>
+                    <button class="w-full bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-gray-300"
+                        onclick="showView('promociones')"> <!-- CORREGIDO -->
+                        Administrar Promociones
+                    </button>
+                </div>
+                
+                <!-- H5: Finanzas -->
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-file-invoice-dollar text-primary mr-2"></i>Gestión Financiera</h3>
+                    <p class="text-gray-600 text-sm mb-3">Revisar pagos, emitir facturas y generar reportes.</p>
+                    <button class="w-full bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-gray-300"
+                        onclick="showView('finanzas')"> <!-- CORREGIDO -->
+                        Administrar Finanzas
+                    </button>
+                </div>
+                
+                <!-- H6: Usuarios -->
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-users-cog text-primary mr-2"></i>Gestión de Usuarios</h3>
+                    <p class="text-gray-600 text-sm mb-3">Administrar cuentas del personal (cocina, reparto, admin).</p>
+                    <button class="w-full bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-gray-300"
+                        onclick="showView('usuarios')"> <!-- CORREGIDO -->
+                        Administrar Usuarios
+                    </button>
+                </div>
+            </section>
+            
+            <!-- ====================================================== -->
+            <!-- SUB-VISTA: PROMOCIONES (H4)                            -->
+            <!-- ====================================================== -->
+            <section id="view-promociones" class="view-content hidden space-y-4">
+                <button class="text-primary font-medium hover:underline" onclick="showView('gestion')"> <!-- CORREGIDO -->
+                    <i class="fas fa-arrow-left"></i> Volver a Gestión
+                </button>
+                <h2 class="text-xl font-semibold text-gray-800">Promociones</h2>
+                <button class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-primary-dark transition-colors shadow-md"
+                    onclick="openModal('H4', 'new')">
+                    <i class="fas fa-plus"></i> Crear Nueva Promoción
+                </button>
+                
+                <!-- H4-S1, S2, S3: Lista de promociones -->
+                <div class="bg-white p-4 rounded-lg shadow-md" id="promo-1">
+                    <h3 class="font-bold text-lg">20% OFF en Burgers</h3>
+                    <p class="text-gray-600 text-sm">Vigencia: 15/11/2025 - 22/11/2025</p>
+                    <div class="flex gap-2 mt-3">
+                        <button class="flex-1 bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-gray-300"
+                            onclick="openModal('H4', 'edit', '20% OFF en Burgers', '20', '2025-11-22')">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="flex-1 bg-red-100 text-red-700 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-red-200"
+                            onclick="deleteItem('promo-1', '20% OFF en Burgers')">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ====================================================== -->
+            <!-- SUB-VISTA: FINANZAS (H5)                               -->
+            <!-- ====================================================== -->
+            <section id="view-finanzas" class="view-content hidden space-y-4">
+                <button class="text-primary font-medium hover:underline" onclick="showView('gestion')"> <!-- CORREGIDO -->
+                    <i class="fas fa-arrow-left"></i> Volver a Gestión
+                </button>
+                <h2 class="text-xl font-semibold text-gray-800">Finanzas</h2>
+                
+                <!-- H5-S3 & H1-S4: Informe -->
+                <button class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-primary-dark transition-colors shadow-md"
+                    onclick="showTempMessage('Generando informe...', 'reporte-msg')">
+                    <i class="fas fa-chart-line"></i> Generar Informe Semanal
+                </button>
+                <p id="reporte-msg" class="text-center text-green-600 font-medium hidden"></p>
+                
+                <!-- H5-S1: Pago registrado -->
+                <h3 class="text-lg font-semibold text-gray-700 pt-4">Pagos Pendientes</h3>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold">Empresa Foodie S.A.</h3>
+                    <p class="text-gray-600 text-sm">Factura #F-1020 - Vence: 20/11/2025</p>
+                    <p class="text-gray-800 font-semibold mt-1">$150.000</p>
+                    <button class="w-full bg-green-500 text-white font-bold py-2 px-4 rounded-lg mt-3 hover:bg-green-600"
+                        onclick="confirmPayment(this)">
+                        <i class="fas fa-check"></i> Registrar Pago
+                    </button>
+                </div>
+
+                <!-- H5-S2: Factura emitida -->
+                <h3 class="text-lg font-semibold text-gray-700 pt-4">Facturas Emitidas (Recientes)</h3>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold">Oficina Tech Ltda. (Factura #F-1021)</h3>
+                    <p class="text-gray-600 text-sm">Fecha: 16/11/2025 - Total: $80.000</p>
+                    <p class="text-xs font-medium bg-green-100 text-green-700 px-2 py-1 rounded-full w-fit mt-2">Pagada</p>
+                </div>
+            </section>
+            
+            <!-- ====================================================== -->
+            <!-- SUB-VISTA: USUARIOS (H6)                               -->
+            <!-- ====================================================== -->
+            <section id="view-usuarios" class="view-content hidden space-y-4">
+                <button class="text-primary font-medium hover:underline" onclick="showView('gestion')"> <!-- CORREGIDO -->
+                    <i class="fas fa-arrow-left"></i> Volver a Gestión
+                </button>
+                <h2 class="text-xl font-semibold text-gray-800">Usuarios del Sistema</h2>
+                
+                <!-- H6-S1: Usuario creado -->
+                <button class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-primary-dark transition-colors shadow-md"
+                    onclick="openModal('H6', 'new')">
+                    <i class="fas fa-user-plus"></i> Crear Nuevo Usuario
+                </button>
+                
+                <!-- H6-S2, S3: Lista de usuarios -->
+                <div class="bg-white p-4 rounded-lg shadow-md" id="user-1">
+                    <h3 class="font-bold text-lg">Ana Torres (Reparto)</h3>
+                    <p class="text-gray-600 text-sm">ana.torres@miempresa.com</p>
+                    <div class="flex gap-2 mt-3">
+                        <button class="flex-1 bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-gray-300"
+                            onclick="openModal('H6', 'edit', 'Ana Torres', 'ana.torres@miempresa.com', 'reparto')">
+                            <i class="fas fa-edit"></i> Editar Permisos
+                        </button>
+                        <button class="flex-1 bg-red-100 text-red-700 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-red-200"
+                            onclick="deleteItem('user-1', 'Ana Torres')">
+                            <i class="fas fa-user-times"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md" id="user-2">
+                    <h3 class="font-bold text-lg">Pedro Costa (Cocina)</h3>
+                    <p class="text-gray-600 text-sm">pedro.costa@miempresa.com</p>
+                    <div class="flex gap-2 mt-3">
+                        <button class="flex-1 bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-gray-300"
+                            onclick="openModal('H6', 'edit', 'Pedro Costa', 'pedro.costa@miempresa.com', 'cocina')">
+                            <i class="fas fa-edit"></i> Editar Permisos
+                        </button>
+                        <button class="flex-1 bg-red-100 text-red-700 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-red-200"
+                             onclick="deleteItem('user-2', 'Pedro Costa')">
+                            <i class="fas fa-user-times"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- 3. Barra de Navegación Inferior -->
+        <nav class="bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] grid grid-cols-5 gap-2 p-3 sticky bottom-0 z-10">
+            <button class="nav-link active" data-view="pedidos" data-title="Pedidos">
+                <i class="fas fa-list-check text-xl"></i>
+                <span class="text-xs font-medium block">Pedidos</span>
+            </button>
+            <button class="nav-link" data-view="menu" data-title="Menú y Catálogo">
+                <i class="fas fa-utensils text-xl"></i>
+                <span class="text-xs font-medium block">Menú</span>
+            </button>
+            <button class="nav-link" data-view="empresas" data-title="Empresas">
+                <i class="fas fa-building text-xl"></i>
+                <span class="text-xs font-medium block">Empresas</span>
+            </button>
+            <button class="nav-link" data-view="repartos" data-title="Repartos">
+                <i class="fas fa-motorcycle text-xl"></i>
+                <span class="text-xs font-medium block">Repartos</span>
+            </button>
+            <button class="nav-link" data-view="gestion" data-title="Gestión">
+                <i class="fas fa-bars text-xl"></i>
+                <span class="text-xs font-medium block">Gestión</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- MODAL GENÉRICO (para formularios H2, H4, H6)          -->
+    <!-- ====================================================== -->
+    <div id="modal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-sm p-6" id="modal-content">
+            <!-- Título del Modal -->
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="text-xl font-bold text-gray-900"></h3>
+                <button onclick="closeModal()">
+                    <i class="fas fa-times text-2xl text-gray-500 hover:text-gray-800"></i>
+                </button>
+            </div>
+            
+            <!-- Contenido del Formulario (Dinámico) -->
+            <form id="modal-form" class="space-y-4">
+                <div id="modal-body" class="space-y-4">
+                    <!-- El contenido del formulario se inyectará aquí -->
+                </div>
+                
+                <div class="flex gap-2 mt-6">
+                    <button type="button" class="flex-1 bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300"
+                        onclick="closeModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-primary-dark">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- ====================================================== -->
+    <!-- SCRIPTS DE JAVASCRIPT                                  -->
+    <!-- ====================================================== -->
+    <script>
+        // Variable para guardar el contexto actual del modal
+        let currentModalContext = {
+            story: null, // 'H2', 'H4', etc.
+            mode: null,  // 'new' o 'edit'
+            id: null     // ID del elemento (si es edit)
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            // Navegación principal
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const viewId = link.dataset.view;
+                    const viewTitle = link.dataset.title;
+                    
+                    // Mostrar la vista seleccionada
+                    showView(viewId, viewTitle);
+                    
+                    // Actualizar estado activo del nav
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    link.classList.add('active');
+                });
+            });
+
+            // Lógica de envío del formulario (Submit)
+            document.getElementById('modal-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // Lógica para AGREGAR NUEVOS ELEMENTOS
+                if (currentModalContext.mode === 'new') {
+                    
+                    // CASO: NUEVA EMPRESA
+                    if (currentModalContext.story === 'H2') {
+                        const nombre = document.getElementById('empresa_nombre').value;
+                        const contacto = document.getElementById('empresa_contacto').value;
+                        const direccion = document.getElementById('empresa_direccion').value;
+                        
+                        if(nombre && contacto) {
+                            addCompanyToList(nombre, contacto, direccion);
+                        }
+                    }
+                    // Puedes agregar aquí casos para H4 (Promociones) y H6 (Usuarios) si lo deseas
+                }
+
+                console.log('Formulario guardado (simulado)');
+                closeModal();
+                showTempMessage('Cambios guardados exitosamente', 'temp-msg-main', true);
+            });
+            
+            // Estilos CSS para botones de stock
+            updateStockButtonStyles();
+        });
+
+        // Función auxiliar para añadir empresa al DOM
+        function addCompanyToList(nombre, contacto, direccion) {
+            const listContainer = document.getElementById('empresas-list');
+            const newId = 'empresa-' + new Date().getTime(); // ID único simple
+            
+            const html = `
+                <div class="bg-white p-4 rounded-lg shadow-md view-content" id="${newId}">
+                    <h3 class="font-bold text-lg">${nombre}</h3>
+                    <p class="text-gray-600 text-sm">Contacto: ${contacto}</p>
+                    <p class="text-gray-600 text-sm">Dirección: ${direccion}</p>
+                    <div class="flex gap-2 mt-3">
+                        <button class="flex-1 bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-gray-300"
+                            onclick="openModal('H2', 'edit', '${nombre}', '${contacto}', '${direccion}')">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="flex-1 bg-red-100 text-red-700 font-semibold py-2 px-3 rounded-lg text-sm hover:bg-red-200"
+                            onclick="deleteItem('${newId}', '${nombre}')">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Insertar al final de la lista
+            listContainer.insertAdjacentHTML('beforeend', html);
+        }
+
+        // Función para mostrar vistas
+        function showView(viewId, viewTitle = null) {
+            document.querySelectorAll('.view-content').forEach(view => {
+                view.classList.add('hidden');
+            });
+            
+            const targetView = document.getElementById(`view-${viewId}`);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+            } else {
+                console.error(`No se encontró la vista: view-${viewId}`);
+            }
+            
+            if (viewTitle) {
+                document.getElementById('view-title').textContent = viewTitle;
+            }
+            
+            // Scroll al inicio de la vista
+            document.getElementById('main-content').scrollTop = 0;
+        }
+        
+        // --- Lógica H1: Pedidos y Menú ---
+        
+        function confirmOrder(button) {
+            const card = button.closest('div');
+            const statusSpan = card.querySelector('span');
+            
+            card.classList.remove('border-primary');
+            card.classList.add('border-yellow-400');
+            
+            statusSpan.classList.remove('bg-primary-light', 'text-primary-dark');
+            statusSpan.classList.add('bg-yellow-100', 'text-yellow-700');
+            statusSpan.textContent = 'En Cocina';
+            
+            button.textContent = 'Pedido Enviado';
+            button.disabled = true;
+            button.classList.add('bg-gray-400', 'hover:bg-gray-400');
+            button.classList.remove('bg-primary', 'hover:bg-primary-dark');
+        }
+
+        function toggleStock(button) {
+            const isAvailable = button.dataset.status === 'available';
+            
+            if (isAvailable) {
+                button.dataset.status = 'unavailable';
+            } else {
+                button.dataset.status = 'available';
+            }
+            updateStockButtonStyles();
+        }
+        
+        function updateStockButtonStyles() {
+            document.querySelectorAll('.stock-toggle').forEach(button => {
+                if (button.dataset.status === 'available') {
+                    button.innerHTML = '<i class="fas fa-check-circle"></i> Disponible';
+                    button.classList.add('available', 'bg-green-100', 'text-green-700');
+                    button.classList.remove('unavailable', 'bg-yellow-100', 'text-yellow-700');
+                } else {
+                    button.innerHTML = '<i class="fas fa-times-circle"></i> Agotado';
+                    button.classList.add('unavailable', 'bg-yellow-100', 'text-yellow-700');
+                    button.classList.remove('available', 'bg-green-100', 'text-green-700');
+                }
+            });
+        }
+        
+        // --- Lógica H3: Repartos ---
+        
+        function assignDelivery(cardId) {
+            const card = document.getElementById(cardId);
+            const select = card.querySelector('select');
+            const repartidor = select.options[select.selectedIndex].text;
+            
+            if (!select.value) {
+                alert('Por favor, selecciona un repartidor.');
+                return;
+            }
+            
+            const pedidoTitle = card.querySelector('h3').textContent;
+            
+            // Crear nueva tarjeta en "En Curso"
+            const enCursoList = document.getElementById('repartos-en-curso-list');
+            const newCardHTML = `
+                <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-blue-500 animate-pulse">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-lg">${pedidoTitle}</h3>
+                        <span class="text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-full">En Camino</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mt-1">Repartidor: ${repartidor}</p>
+                    <p class="text-gray-600 text-sm">Tiempo estimado: 20 min</p>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mt-3">
+                        <div class="bg-blue-600 h-2.5 rounded-full" style="width: 10%"></div>
+                    </div>
+                </div>`;
+            
+            enCursoList.insertAdjacentHTML('beforeend', newCardHTML);
+            
+            // Eliminar tarjeta de "Pendientes"
+            card.remove();
+        }
+
+        // --- Lógica H5: Finanzas ---
+        
+        function confirmPayment(button) {
+            const card = button.closest('div');
+            card.style.transition = 'opacity 0.5s';
+            card.style.opacity = '0';
+            setTimeout(() => card.remove(), 500);
+            
+            showTempMessage('Pago registrado exitosamente', 'temp-msg-main', true);
+        }
+
+        // --- Lógica H2, H4, H6: Modales y Formularios ---
+        
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+
+        function openModal(story, mode, ...data) {
+            // Guardar contexto
+            currentModalContext = { story, mode, id: null };
+
+            let title = '';
+            let bodyHTML = '';
+            
+            switch(story) {
+                case 'H2': // Empresas
+                    title = mode === 'new' ? 'Registrar Nueva Empresa' : 'Editar Empresa';
+                    bodyHTML = `
+                        <div>
+                            <label for="empresa_nombre" class="block text-sm font-medium text-gray-700">Nombre Empresa</label>
+                            <input type="text" id="empresa_nombre" value="${data[0] || ''}" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary">
+                        </div>
+                        <div>
+                            <label for="empresa_contacto" class="block text-sm font-medium text-gray-700">Email Contacto</label>
+                            <input type="email" id="empresa_contacto" value="${data[1] || ''}" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary">
+                        </div>
+                        <div>
+                            <label for="empresa_direccion" class="block text-sm font-medium text-gray-700">Dirección</label>
+                            <input type="text" id="empresa_direccion" value="${data[2] || ''}" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary">
+                        </div>
+                    `;
+                    break;
+                case 'H4': // Promociones
+                    title = mode === 'new' ? 'Crear Promoción' : 'Editar Promoción';
+                    bodyHTML = `
+                        <div>
+                            <label for="promo_nombre" class="block text-sm font-medium text-gray-700">Nombre Promoción</label>
+                            <input type="text" id="promo_nombre" value="${data[0] || ''}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary">
+                        </div>
+                        <div>
+                            <label for="promo_descuento" class="block text-sm font-medium text-gray-700">Porcentaje Descuento (%)</label>
+                            <input type="number" id="promo_descuento" value="${data[1] || ''}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary">
+                        </div>
+                        <div>
+                            <label for="promo_vigencia" class="block text-sm font-medium text-gray-700">Vigencia Hasta</label>
+                            <input type="date" id="promo_vigencia" value="${data[2] || ''}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary">
+                        </div>
+                    `;
+                    break;
+                case 'H6': // Usuarios
+                    title = mode === 'new' ? 'Crear Nuevo Usuario' : 'Editar Usuario';
+                    const selectedRole = data[2] || '';
+                    bodyHTML = `
+                        <div>
+                            <label for="user_nombre" class="block text-sm font-medium text-gray-700">Nombre Completo</LAbel>
+                            <input type="text" id="user_nombre" value="${data[0] || ''}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary">
+                        </div>
+                        <div>
+                            <label for="user_email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="user_email" value="${data[1] || ''}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary">
+                        </div>
+                        <div>
+                            <label for="user_rol" class="block text-sm font-medium text-gray-700">Rol</label>
+                            <select id="user_rol" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary">
+                                <option value="admin" ${selectedRole === 'admin' ? 'selected' : ''}>Administrador</option>
+                                <option value="cocina" ${selectedRole === 'cocina' ? 'selected' : ''}>Cocina</option>
+                                <option value="reparto" ${selectedRole === 'reparto' ? 'selected' : ''}>Reparto</option>
+                            </select>
+                        </div>
+                        <p class="text-xs text-gray-500">${mode === 'new' ? 'Se generará una contraseña temporal.' : 'Editando permisos de acceso.'}</p>
+                    `;
+                    break;
+            }
+            
+            modalTitle.textContent = title;
+            modalBody.innerHTML = bodyHTML;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modalBody.innerHTML = ''; // Limpiar formulario
+            currentModalContext = { story: null, mode: null, id: null }; // Limpiar contexto
+        }
+
+        // --- Lógica General ---
+        
+        function deleteItem(elementId, itemName) {
+            // NOTA: En una app real, usarías window.confirm().
+            // Como alert/confirm están desaconsejados, simulamos un mensaje y luego eliminamos.
+            
+            const item = document.getElementById(elementId);
+            if (!item) return;
+
+            // Mostramos un mensaje temporal en lugar de un confirm
+            showTempMessage(`Eliminando "${itemName}"...`, 'temp-msg-main', false);
+            
+            // Simulación de "confirmación" y borrado
+            setTimeout(() => {
+                item.style.transition = 'opacity 0.5s, transform 0.5s';
+                item.style.opacity = '0';
+                item.style.transform = 'scale(0.9)';
+                setTimeout(() => item.remove(), 500);
+            }, 1500); // Espera 1.5s antes de borrar
+        }
+        
+        function showTempMessage(message, elementId, isSuccess = true) {
+            let msgElement;
+            
+            // Reutilizar un elemento existente o crear uno temporal si no existe
+            if (elementId === 'temp-msg-main') {
+                msgElement = document.getElementById(elementId);
+                if (!msgElement) {
+                    msgElement = document.createElement('div');
+                    msgElement.id = 'temp-msg-main';
+                    msgElement.className = 'fixed top-20 left-1/2 -translate-x-1/2 p-3 rounded-lg shadow-lg text-white font-medium z-50';
+                    document.body.appendChild(msgElement);
+                }
+            } else {
+                msgElement = document.getElementById(elementId);
+            }
+
+            if (!msgElement) return;
+
+            msgElement.textContent = message;
+            msgElement.classList.remove('hidden');
+            
+            if (isSuccess) {
+                msgElement.classList.add('bg-green-500');
+                msgElement.classList.remove('bg-red-500');
+            } else {
+                msgElement.classList.add('bg-red-500');
+                msgElement.classList.remove('bg-green-500');
+            }
+            
+            // Ocultar mensaje después de 2.5 segundos
+            setTimeout(() => {
+                msgElement.classList.add('hidden');
+                if (elementId === 'temp-msg-main') {
+                    msgElement.remove(); // Limpiar el elemento temporal
+                }
+            }, 2500);
+        }
+        
+    </script>
+</body>
+</html>
