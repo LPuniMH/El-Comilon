@@ -75,9 +75,9 @@
             <section id="view-menu" class="view-content hidden space-y-4">
                 <!-- Estático por simplicidad del ejemplo, pero interactivo -->
                 <div class="bg-white p-4 rounded-lg shadow-md">
-                    <h3 class="font-bold text-lg">Burger Clásica</h3>
+                    <h3 class="font-bold text-lg">Hamburgesa Clásica</h3>
                     <p class="text-gray-600 text-sm">Carne, queso, lechuga, tomate.</p>
-                    <p class="text-gray-800 font-semibold mt-2">$5.000</p>
+                    <p class="text-gray-800 font-semibold mt-2">$4.000</p>
                     <div class="flex justify-between items-center mt-3">
                         <span class="font-medium">Estado:</span>
                         <button class="stock-toggle available w-32 text-sm font-semibold py-1 px-3 rounded-full transition-colors" onclick="toggleStock(this)"><i class="fas fa-check-circle"></i> Disponible</button>
@@ -85,7 +85,7 @@
                 </div>
                 <div class="bg-white p-4 rounded-lg shadow-md">
                     <h3 class="font-bold text-lg">Menú Ejecutivo</h3>
-                    <p class="text-gray-600 text-sm">Plato del día + bebida.</p>
+                    <p class="text-gray-600 text-sm">Plato del día + Bebida 1L.</p>
                     <p class="text-gray-800 font-semibold mt-2">$8.000</p>
                     <div class="flex justify-between items-center mt-3">
                         <span class="font-medium">Estado:</span>
@@ -235,31 +235,34 @@
         
         const initialData = {
             pedidos: [
-                { id: 1024, empresa: 'Empresa Foodie', desc: '3x Burger Clásica, 2x Papas', total: '$25.500', status: 'new' },
-                { id: 1023, empresa: 'Oficina Tech', desc: '10x Menú Ejecutivo', total: '$80.000', status: 'cocina' }
+                { id: 1392, empresa: 'Plásticos Londres', desc: '4x Hamburgesa Clásica, 4x Papas', total: '$24.000', status: 'new' },
+                { id: 1393, empresa: 'INACAP', desc: '15x Menú Ejecutivo', total: '$120.000', status: 'cocina' }
             ],
             empresas: [
-                { id: 'e1', nombre: 'Empresa Foodie S.A.', contacto: 'juan@foodie.com', direccion: 'Av. Siempre Viva 123' },
-                { id: 'e2', nombre: 'Oficina Tech Ltda.', contacto: 'm.rojas@tech.cl', direccion: 'Calle Falsa 456' }
+                { id: 'e1', nombre: 'INACAP', contacto: 'santiagocentro@inacap.cl', direccion: 'Almte. Barroso 76' },
+                { id: 'e2', nombre: 'Plásticos Londres', contacto: 'trigoplas@gmail.com', direccion: 'Londres 28' },
+                { id: 'e3', nombre: 'Silk Perfumes ltda', contacto: 'contacto@silkperfumes.cl', direccion: 'Gorbea 2348' }
             ],
             repartosPendientes: [
-                { id: 1022, empresa: 'Empresa ABC', direccion: 'Av. Principal 789' }
+                { id: 1394, empresa: 'Silk Perfumes ltda', direccion: 'Gorbea 2348' }
             ],
             repartosEnCurso: [
-                { id: 1021, empresa: 'Oficina Tech', repartidor: 'Ana Torres', tiempo: '15 min' }
+                { id: 1391, empresa: 'Plásticos Londres', repartidor: 'Josué Parra', tiempo: '15 min' }
             ],
             promociones: [
-                { id: 'p1', nombre: '20% OFF en Burgers', descuento: '20', vigencia: '2025-11-22' }
+                { id: 'p1', nombre: 'Descuento del 20% en Hamburgesas', descuento: '20', vigencia: '2026-03-01' }
             ],
             pagosPendientes: [
-                { id: 'pay1', empresa: 'Empresa Foodie S.A.', factura: 'F-1020', vencimiento: '20/11/2025', monto: '$150.000' }
+                { id: 'pay1', empresa: 'INACAP', factura: 'F-1020', vencimiento: '20/11/2025', monto: '$150.000' }
             ],
             facturasEmitidas: [
-                { id: 'inv1', empresa: 'Oficina Tech Ltda.', factura: 'F-1021', fecha: '16/11/2025', monto: '$80.000' }
+                { id: 'inv1', empresa: 'Plásticos Londres', factura: 'F-1021', fecha: '16/11/2025', monto: '$80.000' }
             ],
             usuarios: [
-                { id: 'u1', nombre: 'Ana Torres', email: 'ana@app.com', rol: 'reparto' },
-                { id: 'u2', nombre: 'Pedro Costa', email: 'pedro@app.com', rol: 'cocina' }
+                { id: 'u1', nombre: 'Josué Parra', email: 'jo.parra@elcomilon.cl', rol: 'reparto' },
+                { id: 'u2', nombre: 'Nicolás Jaramillo', email: 'ni.jaramillo@elcomilon.cl', rol: 'cocina' },
+                { id: 'u3', nombre: 'Luis Ahumada', email: 'lu.ahumada@elcomilon.cl', rol: 'admin' },
+                { id: 'u4', nombre: 'Nashmia Pérez', email: 'na.perez@elcomilon.cl', rol: 'reparto' }
             ],
             informes: []
         };
@@ -359,8 +362,8 @@
                         <p class="text-gray-600 text-sm">Dirección: ${r.direccion}</p>
                         <select id="rep-select-${index}" class="w-full border border-gray-300 rounded-md p-2 mt-3">
                             <option value="">Seleccionar repartidor...</option>
-                            <option value="Juan M.">Juan Morales</option>
-                            <option value="Ana T.">Ana Torres</option>
+                            <option value="Josué P.">Josué Parra</option>
+                            <option value="Nashmia P.">Nashmia Pérez</option>
                         </select>
                         <button onclick="assignRepartidor(${index})" class="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg mt-3 hover:bg-primary-dark">
                             <i class="fas fa-motorcycle"></i> Asignar
