@@ -3,26 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ralsei Porro</title>
+    <title>Portal de Gestión</title>
+    <!-- Tailwind CSS para estilos rápidos y bonitos -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Estilos para el body para centrar la imagen */
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0; /* Fondo opcional */
+        /* Animación suave para la transición de pantallas */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
         }
-        img {
-            max-width: 100%;
-            height: auto;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Estilo para el iframe para que ocupe todo el espacio menos la cabecera */
+        .full-height-frame {
+            height: calc(100vh - 64px); /* 100vh menos la altura del header (h-16 = 64px) */
         }
     </style>
 </head>
-<body>
-    <img src="logoB.png" alt="Imagen centrada">
-    <img src="ralsei.jpeg" alt="Imagen centrada">
+<body class="bg-gray-100 text-gray-800 font-sans overflow-hidden h-screen">
+
+    <!-- ========================================== -->
+    <!-- VISTA 1: MENÚ PRINCIPAL (DASHBOARD)        -->
+    <!-- ========================================== -->
+    <div id="main-menu" class="h-full flex flex-col items-center justify-center p-4 fade-in">
+        
+        <!-- Contenedor del Logo -->
+        <div class="mb-8 text-center">
+            <!-- 
+                NOTA: Aquí busca 'logoB.png'. 
+                He añadido un 'onerror' para que si no tienes la imagen, muestre un icono SVG 
+                y el diseño no se vea roto.
+            -->
+            <img 
+                src="logoB.png" 
+                alt="Logo Empresa" 
+                class="h-32 w-auto mx-auto object-contain drop-shadow-md transition-transform hover:scale-105"
+                onerror="this.onerror=null; this.src='https://placehold.co/400x200/e60000/white?text=Logo+B'; this.style.borderRadius='10px';"
+            >
+            <h1 class="mt-4 text-2xl font-bold text-gray-700">Sistema Centralizado</h1>
+            <p class="text-gray-500">Seleccione un módulo para ingresar</p>
+        </div>
+
+        <!-- Grilla de Botones -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+            
+            <!-- Botón Cliente -->
+            <button onclick="openModule('Cliente', 'https://es.wikipedia.org/wiki/Cliente_(econom%C3%ADa)')" 
+                class="group bg-red-600 hover:bg-red-700 text-white p-6 rounded-xl shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-3">
+                <!-- Icono SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span class="text-xl font-semibold">Cliente</span>
+            </button>
+
+            <!-- Botón Cocina -->
+            <button onclick="openModule('Cocina', 'https://www.figma.com/proto/ZhLXLomNTJK7Wzj0YZy7Cg/Sin-título?node-id=69-44&p=f&t=q6p4uWkUdMR1aBhB-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1')" 
+                class="group bg-red-600 hover:bg-red-700 text-white p-6 rounded-xl shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3"></path></svg>
+                <span class="text-xl font-semibold">Cocina</span>
+            </button>
+
+            <!-- Botón Repartidor -->
+            <button onclick="openModule('Repartidor', 'https://es.wikipedia.org/wiki/Reparto')" 
+                class="group bg-red-600 hover:bg-red-700 text-white p-6 rounded-xl shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                <span class="text-xl font-semibold">Repartidor</span>
+            </button>
+
+            <!-- Botón Administrador -->
+            <button onclick="openModule('Administrador', 'https://lpunimh.github.io/El-Comilon/admin.html')" 
+                class="group bg-red-600 hover:bg-red-700 text-white p-6 rounded-xl shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <span class="text-xl font-semibold">Administrador</span>
+            </button>
+        </div>
+
+        <footer class="mt-12 text-sm text-gray-400">
+            © 2023 Sistema Integrado - Versión 1.0
+        </footer>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VISTA 2: VISOR DE PÁGINA (IFRAME)          -->
+    <!-- ========================================== -->
+    <div id="page-viewer" class="hidden h-screen w-full flex flex-col bg-white fade-in">
+        
+        <!-- Barra Superior con Botón Regresar -->
+        <div class="h-16 bg-gray-800 text-white flex items-center justify-between px-4 shadow-md z-10">
+            <div class="flex items-center gap-4">
+                <button onclick="closeModule()" class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition text-sm font-bold">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    REGRESAR AL MENÚ
+                </button>
+                <span id="module-title" class="text-lg font-semibold border-l border-gray-600 pl-4 text-gray-200">
+                    <!-- El título del módulo aparecerá aquí -->
+                </span>
+            </div>
+            <div class="hidden md:block text-sm text-gray-400">
+                Visualizando módulo incrustado
+            </div>
+        </div>
+
+        <!-- El Iframe (Donde se carga la página externa) -->
+        <div class="w-full full-height-frame bg-gray-50 relative">
+            <div id="loader" class="absolute inset-0 flex items-center justify-center bg-gray-50 text-gray-400">
+                Cargando contenido...
+            </div>
+            <iframe id="content-frame" src="" class="w-full h-full border-0 relative z-10" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Lógica Javascript -->
+    <script>
+        // Referencias a los elementos del DOM
+        const mainMenu = document.getElementById('main-menu');
+        const pageViewer = document.getElementById('page-viewer');
+        const contentFrame = document.getElementById('content-frame');
+        const moduleTitle = document.getElementById('module-title');
+        const loader = document.getElementById('loader');
+
+        /**
+         * Función para abrir un módulo
+         * @param {string} name - Nombre del módulo (ej: Cliente)
+         * @param {string} url - URL de la página a cargar
+         */
+        function openModule(name, url) {
+            // 1. Configurar título y URL
+            moduleTitle.innerText = name;
+            contentFrame.src = url;
+            
+            // 2. Ocultar Menú y Mostrar Visor
+            mainMenu.classList.add('hidden');
+            pageViewer.classList.remove('hidden');
+
+            // Reiniciar el indicador de carga visualmente
+            loader.style.display = 'flex';
+            contentFrame.onload = function() {
+                loader.style.display = 'none';
+            };
+        }
+
+        /**
+         * Función para regresar al menú
+         */
+        function closeModule() {
+            // 1. Limpiar el iframe (para detener videos o procesos)
+            contentFrame.src = "";
+            
+            // 2. Ocultar Visor y Mostrar Menú
+            pageViewer.classList.add('hidden');
+            mainMenu.classList.remove('hidden');
+        }
+
+        // ============================================================
+        // INSTRUCCIONES PARA EL USUARIO:
+        // ============================================================
+        // Busca en el código HTML de arriba las secciones 'onclick' en los botones.
+        // Reemplaza las URLs de ejemplo (https://es.wikipedia.org...) 
+        // por tus archivos reales, por ejemplo:
+        // onclick="openModule('Cliente', 'cliente.html')"
+        // onclick="openModule('Cocina', 'cocina.html')"
+        // ============================================================
+    </script>
 </body>
 </html>
-
